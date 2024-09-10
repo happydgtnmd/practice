@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>프로필 선택</title>
+    <!-- 두 개의 css 파일을 동시 적용할 때 같은 아이디나 클래스의 경우 뒤에 있는 파일의 규칙이 적용됨 -->
+    <!-- <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}"> -->
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <style>
+        * {
+            font-family: "Noto Sans KR";
+        }    
+    </style>
+</head>
+
+<body>
+    <div>
+        <nav class="navbar" style="font-size: 24px; font-weight: 600; width: 100%;">
+            <span>Profile</span>
+            <div class="btn">
+                <form action="{% url "users:logout" %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-primary">로그아웃</button>
+                </form>
+            </div>
+        </nav>
+    </div>
+
+
+    <div style="text-align: center; margin-top: 80px">
+        <h2>프로필을 선택해 주세요!</h2>
+    </div>
+    
+    <div>
+    <!-- <div style="margin: 5px 30% 2px 30%"> -->
+        {% for profile in profiles %}
+            <div class="profile-container">
+                <div style="margin: 8px; font-weight: 500">
+                    <!-- {{ forloop.counter }} -->
+                    {{ profile.profile_name }}
+                </div>
+                
+                <div>
+                    <form action="{% url "home:home_main" profile.profile_id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-primary" style="width: 180px; height: 30px; margin: 0 0 3px 0;">선택</button>
+                    </form>
+                    <div style="display: inline-block;">
+                        <form action="{% url "profiles:profile_info" profile.profile_id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-secondary" style="width: 88px; height: 30px;">수정</button>
+                        </form>
+                    </div>
+                    <div style="display: inline-block;">
+                        {% if profile_count == 1 %}
+                            <form action="{% url "profiles:profile" %}" method="POST">
+                                {% csrf_token %}
+                                <button class="btn btn-secondary" style="width: 88px; height: 30px;" onclick="alert('프로필을 삭제할 수 없습니다.')">삭제</button>
+                            </form>
+                        {% else %}
+                            <form action="/profiles/{{ profile.profile_id }}/" method="POST">
+                                {% csrf_token %}
+                                <button class="btn btn-secondary" style="width: 88px; height: 30px;" onclick="return confirm('선택한 프로필을 삭제하시겠습니까?')">삭제</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div> 
+            </div>
+        {% endfor %}
+    </div>
+    <div class="profile-container" >
+        {% if profile_count >= 10 %}
+        <form action="{% url "profiles:profile" %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-primary" style="width: 280px; height: 30px; border: none" onclick="alert('프로필은 최대 10개까지 생성 가능합니다.')">프로필 생성</button>
+        </form>
+        {% else %}
+        <form action="{% url "profiles:survey1" %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-primary" style="width: 280px; height: 30px; border: none">프로필 생성</button>
+        </form>
+        {% endif %}
+    </div>
+    <br>
+    <br>
+</body>
+
+</html>
